@@ -15,5 +15,4 @@ trap 'rm -rf "$WORKDIR"' EXIT
 
 git clone --depth 1 "$REPO" "$WORKDIR"
 docker build -t "$IMAGE" "$WORKDIR"
-docker login
 docker push "$IMAGE"
