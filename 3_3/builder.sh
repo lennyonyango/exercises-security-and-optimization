@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -euo pipefail
+set -eu
 
 if [ "$#" -ne 2 ]; then
     echo "Usage: ./builder.sh <github-repo> <docker-image>"
@@ -13,7 +13,7 @@ IMAGE="$2"
 WORKDIR="$(mktemp -d)"
 trap 'rm -rf "$WORKDIR"' EXIT
 
-git clone --depth 1 $REPO $WORKDIR
+git clone --depth 1 "$REPO" "$WORKDIR"
 docker build -t "$IMAGE" "$WORKDIR"
 docker login
 docker push "$IMAGE"
