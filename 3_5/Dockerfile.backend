@@ -1,0 +1,28 @@
+FROM golang:1.16 AS build
+
+WORKDIR /usr/src/app
+
+COPY code/example-backend/go.* ./
+RUN go mod download
+
+COPY code/example-backend/ .
+
+RUN CGO_ENABLED=0 go build -o server .
+
+
+FROM ubuntu:20.04
+
+WORKDIR /usr/src/app
+
+RUN useradd -m appuser
+
+COPY --from=build --chown=appuser:appuser /usr/src/app/server .
+
+ENV PORT=8080
+ENV REQUEST_ORIGIN=http://localhost:5001
+
+USER appuser
+
+EXPOSE 8080
+
+CMD ["./server"]
