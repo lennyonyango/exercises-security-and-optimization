@@ -1,0 +1,25 @@
+FROM golang:1.16-alpine AS build
+
+WORKDIR /usr/src/app
+
+COPY code/example-backend/go.* ./
+
+RUN CGO_ENABLED=0 go mod download
+
+COPY code/example-backend/ .
+
+RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o server .
+
+FROM scratch
+
+WORKDIR /usr/src/app
+
+COPY --from=build /usr/src/app/server .
+
+ENV REQUEST_ORIGIN=http://localhost:5001
+
+USER 10001
+
+EXPOSE 8080
+
+CMD ["./server"]
